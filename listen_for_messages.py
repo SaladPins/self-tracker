@@ -12,6 +12,17 @@ bot = Bot(BOT_TOKEN)
 MORNING_CSV = 'morning_logs.csv'
 FOCUS_CSV = 'focus_log.csv'
 
+def load_last_update_id():
+    try:
+        with open('last_update_id.txt', 'r') as f:
+            return int(f.read().strip())
+    except FileNotFoundError:
+        return None
+
+def save_last_update_id(update_id):
+    with open('last_update_id.txt', 'w') as f:
+        f.write(str(update_id))
+
 def save_to_csv(filename, row, headers=None):
     try:
         with open(filename, 'r') as f:
@@ -41,7 +52,9 @@ async def process_new_messages():
     updates = await bot.get_updates()
 
     for update in updates:
-        last_update_id = update.update_id
+        last_update_id = load_last_update_id()
+
+        save_last_update_id(last_update_id)
         message = update.message
         if not message or not message.text:
             continue

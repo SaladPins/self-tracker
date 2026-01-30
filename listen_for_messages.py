@@ -3,6 +3,9 @@ import csv
 from datetime import datetime
 from pathlib import Path
 from telegram import Bot
+import os 
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 BOT_TOKEN = '8273792941:AAEkYSxkpazej9UCBSbNCCVVO-WDyUEMP50'
 CHAT_ID = 8109589127
@@ -83,6 +86,5 @@ if __name__ == "__main__":
     asyncio.run(process_new_messages())
 
         
-
 
 

@@ -15,8 +15,12 @@ FOCUS_CSV = 'focus_log.csv'
 def load_last_update_id():
     try:
         with open('last_update_id.txt', 'r') as f:
-            return int(f.read().strip())
-    except FileNotFoundError:
+            content = int(f.read().strip())
+            if content == '':
+                return None
+            return int(content)
+
+    except (FileNotFoundError, ValueError):
         return None
 
 def save_last_update_id(update_id):
@@ -47,13 +51,15 @@ def parse_focus_message(text):
     return [now.date(), now.strftime("%H:%M"), text]
 
 async def process_new_messages():
-    global last_update_id
+    last_update_id = load_last_update_id()
 
-    updates = await bot.get_updates()
+    updates = await bot.get_updates(offset=(last_update_id +1) if last_update_id else None)
 
     for update in updates:
-        last_update_id = load_last_update_id()
+        if not update.message or not update.message.text:
+            continue
 
+        last_update_id = update.update_id
         save_last_update_id(last_update_id)
         message = update.message
         if not message or not message.text:
